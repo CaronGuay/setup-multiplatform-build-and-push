@@ -19,6 +19,9 @@ inputs:
   pushtag:
     description: 'Push tag'
     required: true
+  git_patoken:
+    description: 'git personal access token'
+    required: false    
 runs:
   using: "composite"
   steps:
@@ -50,6 +53,8 @@ runs:
       name: Build and push
       uses: docker/build-push-action@v2
       with:
+        secrets: |
+          GIT_PAT=${{ inputs.git_patoken }}
         file: ${{ inputs.dockerfile_name }}
         platforms: linux/amd64,linux/arm64
         push: true
