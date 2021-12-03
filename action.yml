@@ -5,7 +5,7 @@ inputs:
   registry:
     description: 'Registry to get image'
     required: false
-    default: 'ghcr.io'
+    default: ghcr.io
   username:
     description: 'Registry login username'
     required: true
@@ -15,13 +15,21 @@ inputs:
   dockerfile_name:
     description: 'Dockerfile name, used in build'
     required: false
-    default: 'Dockerfile'
+    default: Dockerfile
   pushtag:
     description: 'Push tag'
     required: true
   git_patoken:
     description: 'git personal access token'
     required: false
+  platforms:
+    description: 'platforms to build'
+    required: false
+    default: linux/amd64,linux/arm64
+  repo_owner:
+    description: 'Repo owner to push to'
+    required: false
+    default: codeboxxtechschool
 runs:
   using: "composite"
   steps:
@@ -56,9 +64,9 @@ runs:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
         file: ${{ inputs.dockerfile_name }}
-        platforms: linux/amd64,linux/arm64
+        platforms: ${{ inputs.platforms }}
         push: true
         tags: |
-          ghcr.io/codeboxxtechschool/${{ inputs.pushtag }}
+          ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
