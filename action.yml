@@ -33,6 +33,10 @@ inputs:
   bundle_required_files:
     description: 'platforms to build'
     required: false
+  image_base:
+    description: 'Image from which to bundle on'
+    required: false
+    default: cg/java-dev-capy-webkit
 
 runs:
   using: "composite"
@@ -72,16 +76,32 @@ runs:
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
     -
-      name: Build and push
+      name: Build and push (bundle not required)
       uses: docker/build-push-action@v2
+      if: ${{steps.changed_files.outputs.any_changed != 'true'}}
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
-        target: bundle-required--${{steps.changed_files.outputs.any_changed}}
         build-args: |
           IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
+        push: true
+        tags: |
+          ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
+    -
+      name: Build and push (bundle required)
+      uses: docker/build-push-action@v2
+      if: ${{steps.changed_files.outputs.any_changed == 'true'}}
+      with:
+        secrets: |
+          GIT_PAT=${{ inputs.git_patoken }}
+        file: ${{ inputs.dockerfile_name }}
+        platforms: ${{ inputs.platforms }}
+        build-args: |
+          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
