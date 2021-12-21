@@ -82,7 +82,7 @@ runs:
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          target=bundle-required--#{{steps.changed_files.outputs.any_changed}}
+          target=bundle-required--${{steps.changed_files.outputs.any_changed}}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
