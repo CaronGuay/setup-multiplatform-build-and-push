@@ -30,12 +30,24 @@ inputs:
     description: 'Repo owner to push to'
     required: false
     default: codeboxxtechschool
+  bundle_required_files:
+    description: 'platforms to build'
+    required: false
+
 runs:
   using: "composite"
   steps:
     -
       name: Checkout
       uses: actions/checkout@v2
+    - name: Get changed files
+      id: changed_files
+      uses: tj-actions/changed-files@v2.0.0
+      with:
+        files: |
+          Gemfile.lock
+          ${{ inputs.dockerfile_name }}
+          ${{ inputs.bundle_required_files }}
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v1
@@ -60,11 +72,15 @@ runs:
     -
       name: Build and push
       uses: docker/build-push-action@v2
+      env:
+        IMAGE_REF: ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
+        build-args: |
+          target=bundle-required--#{{steps.changed_files.outputs.any_changed}}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
