@@ -31,7 +31,7 @@ inputs:
     required: false
     default: codeboxxtechschool
   bundle_required_files:
-    description: 'platforms to build'
+    description: 'files that require bundle'
     required: false
   image_base:
     description: 'Image from which to bundle on'
