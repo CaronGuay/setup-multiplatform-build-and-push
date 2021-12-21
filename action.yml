@@ -81,7 +81,7 @@ runs:
         platforms: ${{ inputs.platforms }}
         target: bundle-required--${{steps.changed_files.outputs.any_changed}}
         build-args: |
-          image_ref=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
+          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
