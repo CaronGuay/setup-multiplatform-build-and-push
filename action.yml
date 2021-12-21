@@ -76,17 +76,11 @@ runs:
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
     -
-      name: "Bundle required - true"
-      shell: bash
-      if: ${{steps.changed_files.outputs.any_changed == 'true'}}
-      run: |
-        echo "IMAGE_REF=${{ inputs.pushtag }}" >> $GITHUB_ENV
-    -
-      name: "Bundle required - false"
+      name: "setup image ref"
       shell: bash
       if: ${{steps.changed_files.outputs.any_changed != 'true'}}
       run: |
-        echo "IMAGE_REF=${{ inputs.image_base }}" >> $GITHUB_ENV
+        [[ "${{ steps.changed_files.outputs.any_changed }}" = 'true' ]] && echo "IMAGE_REF=${{ inputs.pushtag }}" >> $GITHUB_ENV || echo "IMAGE_REF=${{ inputs.image_base }}" >> $GITHUB_ENV
     -
       name: Build and push (bundle not required)
       uses: docker/build-push-action@v2
