@@ -74,15 +74,14 @@ runs:
     -
       name: Build and push
       uses: docker/build-push-action@v2
-      env:
-        IMAGE_REF: ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
+        target: bundle-required--${{steps.changed_files.outputs.any_changed}}
         build-args: |
-          target=bundle-required--${{steps.changed_files.outputs.any_changed}}
+          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
