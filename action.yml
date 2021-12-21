@@ -76,32 +76,29 @@ runs:
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
     -
+      name: "Bundle required - true"
+      shell: bash
+      if: ${{steps.changed_files.outputs.any_changed == 'true'}}
+      run: echo "Bundle required"
+      env:
+        IMAGE_REF: ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
+    -
+      name: "Bundle required - false"
+      shell: bash
+      if: ${{steps.changed_files.outputs.any_changed != 'true'}}
+      run: echo "Bundle not required"
+      env:
+        IMAGE_REF: ${{ inputs.image_base }}
+    -
       name: Build and push (bundle not required)
       uses: docker/build-push-action@v2
-      if: ${{steps.changed_files.outputs.any_changed != 'true'}}
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
-        push: true
-        tags: |
-          ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache
-    -
-      name: Build and push (bundle required)
-      uses: docker/build-push-action@v2
-      if: ${{steps.changed_files.outputs.any_changed == 'true'}}
-      with:
-        secrets: |
-          GIT_PAT=${{ inputs.git_patoken }}
-        file: ${{ inputs.dockerfile_name }}
-        platforms: ${{ inputs.platforms }}
-        build-args: |
-          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}
+          IMAGE_REF=${{ env.IMAGE_REF }}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
