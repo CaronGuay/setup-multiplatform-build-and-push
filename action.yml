@@ -79,16 +79,16 @@ runs:
       name: "Bundle required - true"
       shell: bash
       if: ${{steps.changed_files.outputs.any_changed == 'true'}}
-      run: echo "Bundle required"
-      env:
-        IMAGE_REF: ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
+      run: |
+        export IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
+        echo "::set-env name=IMAGE_REF::$IMAGE_REF"
     -
       name: "Bundle required - false"
       shell: bash
       if: ${{steps.changed_files.outputs.any_changed != 'true'}}
-      run: echo "Bundle not required"
-      env:
-        IMAGE_REF: ${{ inputs.image_base }}
+      run: |
+        export IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}
+        echo "::set-env name=IMAGE_REF::$IMAGE_REF"
     -
       name: Build and push (bundle not required)
       uses: docker/build-push-action@v2
