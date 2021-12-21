@@ -80,15 +80,13 @@ runs:
       shell: bash
       if: ${{steps.changed_files.outputs.any_changed == 'true'}}
       run: |
-        export IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
-        echo "::set-env name=IMAGE_REF::$IMAGE_REF"
+        echo "IMAGE_REF=${{ inputs.pushtag }}" >> $GITHUB_ENV
     -
       name: "Bundle required - false"
       shell: bash
       if: ${{steps.changed_files.outputs.any_changed != 'true'}}
       run: |
-        export IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}
-        echo "::set-env name=IMAGE_REF::$IMAGE_REF"
+        echo "IMAGE_REF=${{ inputs.image_base }}" >> $GITHUB_ENV
     -
       name: Build and push (bundle not required)
       uses: docker/build-push-action@v2
@@ -98,7 +96,7 @@ runs:
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ env.IMAGE_REF }}
+          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ env.IMAGE_REF }}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
