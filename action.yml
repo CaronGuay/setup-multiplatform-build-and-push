@@ -51,7 +51,6 @@ runs:
       with:
         files: |
           Gemfile.lock
-          ${{ inputs.dockerfile_name }}
           ${{ inputs.bundle_required_files }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
