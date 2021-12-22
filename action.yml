@@ -64,7 +64,7 @@ runs:
     - name: "setup image ref"
       shell: bash
       run: |
-        if [ ${{ steps.changed_files.outputs.only_changed }} ]
+        if [ "${{ steps.changed_files.outputs.only_changed }}" -eq "true" ]
         then
            echo "IMAGE_REF=${{ inputs.image_base }}" >> $GITHUB_ENV
         else
