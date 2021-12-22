@@ -64,11 +64,11 @@ runs:
     - name: "setup image ref"
       shell: bash
       run: |
-        if [ "${{ steps.changed_files.outputs.any_changed }}" -ne "true" ]
+        if [ ${{ steps.changed_files.outputs.any_changed }} ]
         then
-           echo "IMAGE_REF=${{ inputs.pushtag }}" >> $GITHUB_ENV
-        else
            echo "IMAGE_REF=${{ inputs.image_base }}" >> $GITHUB_ENV
+        else
+           echo "IMAGE_REF=${{ inputs.pushtag }}" >> $GITHUB_ENV
         fi
     - name: Build and push (bundle not required)
       uses: docker/build-push-action@v2
