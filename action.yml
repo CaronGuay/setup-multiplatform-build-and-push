@@ -12,13 +12,14 @@ inputs:
   password:
     description: 'Registry login password'
     required: true
-  dockerfile_name:
-    description: 'Dockerfile name, used in build'
+  bundle_dockerfile_name:
+    description: 'dockerfile name, used in bundle build'
     required: false
     default: Dockerfile
-  pushtag:
-    description: 'Push tag'
-    required: true
+  test_dockerfile_name:
+    description: 'dockerfile name, used in test build'
+    required: false
+    default: Dockerfile
   git_patoken:
     description: 'git personal access token'
     required: false
@@ -30,6 +31,15 @@ inputs:
     description: 'Repo owner to push to'
     required: false
     default: codeboxxtechschool
+  push_dir:
+    description: 'directory to push to'
+    required: true
+  branch:
+    description: 'branch for tag'
+    required: true
+  version:
+    description: 'version for tag'
+    required: true
   bundle_required_files:
     description: 'files that require bundle'
     required: false
@@ -37,6 +47,10 @@ inputs:
     description: 'Image from which to bundle on'
     required: false
     default: cg/java-dev-capy-webkit
+
+#    push_directory: cg/customer/test
+#    branch: ${{ steps.extract_branch.outputs.branch }}
+#    version: latest
 
 runs:
   using: "composite"
@@ -61,28 +75,34 @@ runs:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
+    - name: "setup image ref"
+      shell: bash
+      run: |
+        echo "REPO_PATH=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.push_dir }}" >> $GITHUB_ENV
+        echo "TAG_LEAF=${{ inputs.branch }}:${{ inputs.version }}" >> $GITHUB_ENV
+        echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
     - name: Build and push bundle
       if: ${{steps.changed_files.outputs.only_changed == 'true'}}
       uses: docker/build-push-action@v2
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
-        file: ${{ inputs.dockerfile_name }}
+        file: ${{ inputs.bundle_dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}
+          IMAGE_REF=${{ env.REPO_PATH }}/${{ inputs.image_base }}
         push: true
         tags: |
-          ${{ inputs.registry }}/${{ inputs.repo_owner }}/bundle/${{ inputs.pushtag }}
+          ${{ env.BUNDLE_TAG }}
     - name: Build and push for tests
       uses: docker/build-push-action@v2
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
-        file: ${{ inputs.dockerfile_name }}
+        file: ${{ inputs.test_dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/bundle/${{ inputs.image_base }}
+          IMAGE_REF=${{ env.BUNDLE_TAG }}
         push: true
         tags: |
-          ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
+          ${{ env.REPO_PATH }}/${{ env.TAG_LEAF }}
