@@ -75,12 +75,14 @@ runs:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
-    - name: "setup image ref"
+    - name: "setup repo path and tag leaf"
       shell: bash
       run: |
         echo "REPO_PATH=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.push_dir }}" >> $GITHUB_ENV
         echo "TAG_LEAF=${{ inputs.branch }}:${{ inputs.version }}" >> $GITHUB_ENV
-        echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
+    - name: "setup bundle tag"
+      shell: bash
+      run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
     - name: Build and push bundle
       if: ${{steps.changed_files.outputs.only_changed == 'true'}}
       uses: docker/build-push-action@v2
