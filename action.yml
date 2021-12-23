@@ -61,16 +61,8 @@ runs:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
-    - name: "setup image ref"
-      shell: bash
-      run: |
-        if [ "${{ steps.changed_files.outputs.only_changed }}" -eq "true" ]
-        then
-           echo "IMAGE_REF=${{ inputs.image_base }}" >> $GITHUB_ENV
-        else
-           echo "IMAGE_REF=${{ inputs.pushtag }}" >> $GITHUB_ENV
-        fi
-    - name: Build and push (bundle not required)
+    - name: Build and push bundle
+      if: ${{steps.changed_files.outputs.only_changed == 'true'}}
       uses: docker/build-push-action@v2
       with:
         secrets: |
@@ -78,7 +70,19 @@ runs:
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ env.IMAGE_REF }}
+          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}
+        push: true
+        tags: |
+          ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}/bundle
+    - name: Build and push for tests
+      uses: docker/build-push-action@v2
+      with:
+        secrets: |
+          GIT_PAT=${{ inputs.git_patoken }}
+        file: ${{ inputs.dockerfile_name }}
+        platforms: ${{ inputs.platforms }}
+        build-args: |
+          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}/bundle
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
