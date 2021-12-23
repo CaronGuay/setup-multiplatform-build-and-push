@@ -43,10 +43,9 @@ inputs:
   bundle_required_files:
     description: 'files that require bundle'
     required: false
-  image_base:
-    description: 'Image from which to bundle on'
-    required: false
-    default: cg/java-dev-capy-webkit
+  bundle_from:
+    description: 'bundle from this image'
+    required: true
 
 #    push_directory: cg/customer/test
 #    branch: ${{ steps.extract_branch.outputs.branch }}
@@ -75,11 +74,14 @@ runs:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
-    - name: "setup repo path and tag leaf"
+    - name: "setup repo owner and tag leaf"
       shell: bash
       run: |
-        echo "REPO_PATH=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.push_dir }}" >> $GITHUB_ENV
+        echo "REPO_OWNER=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.push_dir }}" >> $GITHUB_ENV
         echo "TAG_LEAF=${{ inputs.branch }}:${{ inputs.version }}" >> $GITHUB_ENV
+    - name: "setup repo path"
+      shell: bash
+      run: echo "REPO_PATH=${{ env.REPO_OWNER }}/${{ inputs.push_dir }}" >> $GITHUB_ENV
     - name: "setup bundle tag"
       shell: bash
       run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
@@ -92,7 +94,7 @@ runs:
         file: ${{ inputs.bundle_dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ env.REPO_PATH }}/${{ inputs.image_base }}
+          IMAGE_REF=${{ env.REPO_OWNER }}/${{ inputs.bundle_from }}
         push: true
         tags: |
           ${{ env.BUNDLE_TAG }}
