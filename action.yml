@@ -73,7 +73,7 @@ runs:
           IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}
         push: true
         tags: |
-          ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}/bundle
+          ${{ inputs.registry }}/${{ inputs.repo_owner }}/bundle/${{ inputs.pushtag }}
     - name: Build and push for tests
       uses: docker/build-push-action@v2
       with:
@@ -82,7 +82,7 @@ runs:
         file: ${{ inputs.dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.image_base }}/bundle
+          IMAGE_REF=${{ inputs.registry }}/${{ inputs.repo_owner }}/bundle/${{ inputs.image_base }}
         push: true
         tags: |
           ${{ inputs.registry }}/${{ inputs.repo_owner }}/${{ inputs.pushtag }}
