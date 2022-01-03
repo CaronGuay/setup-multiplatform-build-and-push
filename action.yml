@@ -87,12 +87,14 @@ runs:
       run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
     - name: Inspect manifest
       shell: bash
-      run: echo "##[set-output name=not_exists;]$(docker manifest inspect ${{ env.BUNDLE_TAG }} >/dev/null)"
+      run: echo "##[set-output name=not_exists;]$(echo docker manifest inspect ${{ env.BUNDLE_TAG }} > /dev/null)"
       id: tag_manifest
+    - name: "manifest tag exists?"
+      shell:
+      run: echo "BUNDLE_TAG_EXISTS=${{ steps.tag_manifest.outputs.not_exists }}"
     - name: "setup branch name"
       shell: bash
-      run: |
-        echo "BRANCH=${{ steps.extract_branch.outputs.branch }}" >> $GITHUB_ENV
+      run: echo "BRANCH=${{ steps.extract_branch.outputs.branch }}" >> $GITHUB_ENV
     - name: Build and push bundle
       if: ${{ steps.changed_files.outputs.only_changed == 'true' || steps.tag_manifest.outputs.not_exists }}
       #docker manifest inspect ghcr.io/codeboxxtechschool/cg/java-dev-capy-webkit:latest >/dev/null;
