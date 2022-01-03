@@ -58,22 +58,6 @@ runs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0  # OR "2"
-    - name: Inspect already bundled manifest
-      id: tag_manifest
-      shell: bash
-      run: |
-        if docker manifest inspect ${{ env.BUNDLE_TAG }} >/dev/null; then
-          echo ::set-output name=exists::"true"
-        else
-          echo ::set-output name=exists::"false"
-        fi
-    - name: Get changed files
-      id: changed_files
-      if: steps.tag_manifest.outputs.exists == 'true'
-      uses: tj-actions/changed-files@v2.0.0
-      with:
-        files: |
-          Gemfile.lock
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
@@ -98,6 +82,22 @@ runs:
     - name: "setup branch name"
       shell: bash
       run: echo "BRANCH=${{ steps.extract_branch.outputs.branch }}" >> $GITHUB_ENV
+    - name: Inspect already bundled manifest
+      id: tag_manifest
+      shell: bash
+      run: |
+        if docker manifest inspect ${{ env.BUNDLE_TAG }} >/dev/null; then
+          echo ::set-output name=exists::"true"
+        else
+          echo ::set-output name=exists::"false"
+        fi
+    - name: Get changed files
+      id: changed_files
+      if: steps.tag_manifest.outputs.exists == 'true'
+      uses: tj-actions/changed-files@v2.0.0
+      with:
+        files: |
+          Gemfile.lock
     - name: Build and push bundle
       if: steps.tag_manifest.outputs.exists == 'false' || steps.changed_files.outputs.only_changed == 'true'
       uses: docker/build-push-action@v2
