@@ -91,7 +91,7 @@ runs:
       id: tag_manifest
     - name: "manifest tag exists?"
       shell: bash
-      run: echo "BUNDLE_TAG_EXISTS=${{ steps.tag_manifest.outputs.not_exists }}"
+      run: echo BUNDLE_TAG_EXISTS=${{ steps.tag_manifest.outputs.not_exists }}
     - name: "setup branch name"
       shell: bash
       run: echo "BRANCH=${{ steps.extract_branch.outputs.branch }}" >> $GITHUB_ENV
