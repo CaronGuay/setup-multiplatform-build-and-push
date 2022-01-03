@@ -87,7 +87,7 @@ runs:
       run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
     - name: Inspect manifest
       shell: bash
-      run: echo "##[set-output name=not_exists;]$(docker manifest inspect ${{ env.BUNDLE_TAG }} > /dev/null;)"
+      run: echo ::set-output name=not_exists::"$(docker manifest inspect ${{ env.BUNDLE_TAG }} > /dev/null;)"
       id: tag_manifest
     - name: "manifest tag exists?"
       shell: bash
