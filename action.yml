@@ -90,7 +90,7 @@ runs:
       run: echo "##[set-output name=not_exists;]$(docker manifest inspect ${{ env.BUNDLE_TAG }} > /dev/null;)"
       id: tag_manifest
     - name: "manifest tag exists?"
-      shell:
+      shell: bash
       run: echo "BUNDLE_TAG_EXISTS=${{ steps.tag_manifest.outputs.not_exists }}"
     - name: "setup branch name"
       shell: bash
