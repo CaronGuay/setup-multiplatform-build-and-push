@@ -91,12 +91,12 @@ runs:
       id: tag_manifest
     - name: "manifest tag exists?"
       shell: bash
-      run: echo ${{ steps.tag_manifest.outputs.not_exists }}
+      run: echo "${{ steps.tag_manifest.outputs.not_exists }}"
     - name: "setup branch name"
       shell: bash
       run: echo "BRANCH=${{ steps.extract_branch.outputs.branch }}" >> $GITHUB_ENV
     - name: Build and push bundle
-      if: ${{ steps.changed_files.outputs.only_changed == 'true' || steps.tag_manifest.outputs.not_exists }}
+      if: ${{ steps.changed_files.outputs.only_changed == 'true' || steps.tag_manifest.outputs.not_exists == 'manifest unknown' }}
       #docker manifest inspect ghcr.io/codeboxxtechschool/cg/java-dev-capy-webkit:latest >/dev/null;
       uses: docker/build-push-action@v2
       with:
