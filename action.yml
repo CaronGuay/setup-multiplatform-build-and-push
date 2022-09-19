@@ -16,8 +16,8 @@ inputs:
     description: 'dockerfile name, used in bundle build'
     required: false
     default: Dockerfile
-  test_dockerfile_name:
-    description: 'dockerfile name, used in test build'
+  main_dockerfile_name:
+    description: 'dockerfile name, used in main build'
     required: false
     default: Dockerfile
   git_patoken:
@@ -40,15 +40,15 @@ inputs:
   version:
     description: 'version for tag'
     required: true
-  bundle_required_files:
-    description: 'files that require bundle'
-    required: false
   bundle_from:
     description: 'bundle from this image'
     required: true
   do_bundle_step:
     description: 'trigger bundle step'
     default: true
+    required: false
+  main_stage:
+    description: 'stage to target in docker file'
     required: false
 
 #    push_directory: cg/customer/test
@@ -112,15 +112,16 @@ runs:
         push: true
         tags: |
           ${{ env.BUNDLE_TAG }}
-    - name: Build and push for tests
+    - name: Build and push main
       uses: docker/build-push-action@v2
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
-        file: ${{ inputs.test_dockerfile_name }}
+        file: ${{ inputs.main_dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
           IMAGE_REF=${{ env.BUNDLE_TAG }}
         push: true
         tags: |
           ${{ env.REPO_PATH }}/${{ env.TAG_LEAF }}
+        target: ${{ inputs.main_stage }}
