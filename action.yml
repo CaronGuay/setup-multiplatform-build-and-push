@@ -122,8 +122,6 @@ runs:
         tags: |
           ${{ env.BUNDLE_TAG }}
         target: ${{ inputs.main_stage }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
     - name: Build and push main
       if: inputs.do_main_step == 'true'
       uses: docker/build-push-action@v2
@@ -139,10 +137,3 @@ runs:
         tags: |
           ${{ env.REPO_PATH }}/${{ env.TAG_LEAF }}
         target: ${{ inputs.main_stage }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-    - name: Move cache
-      shell: bash
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
