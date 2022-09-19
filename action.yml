@@ -47,12 +47,17 @@ inputs:
     description: 'trigger bundle step'
     default: true
     required: false
+  do_main_step:
+    description: 'trigger main step'
+    default: true
+    required: false
   main_stage:
     description: 'stage to target in docker file'
     required: false
   build_args:
     description: 'arguments to pass to main build'
     required: false
+
 
 #    push_directory: cg/customer/test
 #    branch: ${{ steps.extract_branch.outputs.branch }}
@@ -112,10 +117,13 @@ runs:
         platforms: ${{ inputs.platforms }}
         build-args: |
           IMAGE_REF=${{ env.REPO_OWNER }}/${{ inputs.bundle_from }}
+          ${{ inputs.build_args }}
         push: true
         tags: |
           ${{ env.BUNDLE_TAG }}
+        target: ${{ inputs.main_stage }}
     - name: Build and push main
+      if: inputs.do_main_step == 'true'
       uses: docker/build-push-action@v2
       with:
         secrets: |
