@@ -50,6 +50,9 @@ inputs:
   main_stage:
     description: 'stage to target in docker file'
     required: false
+  build_args:
+    description: 'arguments to pass to main build'
+    required: false
 
 #    push_directory: cg/customer/test
 #    branch: ${{ steps.extract_branch.outputs.branch }}
@@ -121,6 +124,7 @@ runs:
         platforms: ${{ inputs.platforms }}
         build-args: |
           IMAGE_REF=${{ env.BUNDLE_TAG }}
+          ${{ inputs.build_args }}
         push: true
         tags: |
           ${{ env.REPO_PATH }}/${{ env.TAG_LEAF }}
