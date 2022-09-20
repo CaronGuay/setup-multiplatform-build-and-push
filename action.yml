@@ -107,8 +107,13 @@ runs:
       with:
         files: |
           Gemfile.lock
+    - shell: bash
+      run: |
+        echo "do_bundle_step = ${{ inputs.do_bundle_step }}"      
+        echo "tag_manifest exists = ${{ steps.tag_manifest.outputs.exists }}"      
+        echo "only_changed = ${{ steps.changed_files.outputs.only_changed }}"
     - name: Build and push bundle
-      if: inputs.do_bundle_step && (!steps.tag_manifest.outputs.exists || steps.changed_files.outputs.only_changed)
+      if: (inputs.do_bundle_step == 'true') && ((steps.tag_manifest.outputs.exists == 'false') || (steps.changed_files.outputs.only_changed == 'true'))
       uses: docker/build-push-action@v2
       with:
         secrets: |
