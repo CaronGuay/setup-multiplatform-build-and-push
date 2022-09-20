@@ -128,7 +128,7 @@ runs:
           ${{ env.BUNDLE_TAG }}
         target: ${{ inputs.main_stage }}
     - name: Build and push main
-      if: inputs.do_main_step
+      if: inputs.do_main_step == 'true'
       uses: docker/build-push-action@v2
       with:
         secrets: |
