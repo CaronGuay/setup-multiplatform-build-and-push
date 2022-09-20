@@ -108,7 +108,7 @@ runs:
         files: |
           Gemfile.lock
     - name: Build and push bundle
-      if: inputs.do_bundle_step == 'true' && (steps.tag_manifest.outputs.exists == 'false' || steps.changed_files.outputs.only_changed == 'true')
+      if: ${{ (inputs.do_bundle_step == 'true') && ((steps.tag_manifest.outputs.exists == 'false') || (steps.changed_files.outputs.only_changed == 'true')) }}
       uses: docker/build-push-action@v2
       with:
         secrets: |
@@ -123,7 +123,7 @@ runs:
           ${{ env.BUNDLE_TAG }}
         target: ${{ inputs.main_stage }}
     - name: Build and push main
-      if: inputs.do_main_step == 'true'
+      if: ${{ inputs.do_main_step == 'true' }}
       uses: docker/build-push-action@v2
       with:
         secrets: |
