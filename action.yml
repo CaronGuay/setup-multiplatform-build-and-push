@@ -107,6 +107,8 @@ runs:
       with:
         files: |
           Gemfile.lock
+          yarn.lock
+          client/yarn.lock
     - shell: bash
       run: |
         echo "do_bundle_step = ${{ inputs.do_bundle_step }}"      
