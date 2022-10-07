@@ -23,6 +23,9 @@ inputs:
   git_patoken:
     description: 'git personal access token'
     required: false
+  npm_patoken:
+    description: 'git personal access token for npms'
+    required: false
   platforms:
     description: 'platforms to build'
     required: false
@@ -120,6 +123,7 @@ runs:
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
+          npm_pat=${{ inputs.npm_patoken }}
         file: ${{ inputs.bundle_dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
@@ -135,6 +139,7 @@ runs:
       with:
         secrets: |
           GIT_PAT=${{ inputs.git_patoken }}
+          npm_pat=${{ inputs.npm_patoken }}
         file: ${{ inputs.main_dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
