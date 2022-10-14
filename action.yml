@@ -115,7 +115,7 @@ runs:
 
     - name: Get changed files
       id: changed_files
-      if: steps.tag_manifest.outputs.exists == 'true'
+      if: env.docker_manifest_exists == 'true'
       uses: tj-actions/changed-files@v32
       with:
         files: |
