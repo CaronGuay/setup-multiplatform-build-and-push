@@ -70,55 +70,67 @@ runs:
   using: "composite"
   steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0  # OR "2"
+
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
+      with:
+        platforms: ${{ inputs.platforms }}
+
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
+
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
+
     - name: "setup repo owner and tag leaf"
       shell: bash
       run: |
         echo "REPO_OWNER=${{ inputs.registry }}/${{ inputs.repo_owner }}" >> $GITHUB_ENV
         echo "TAG_LEAF=${{ inputs.branch }}:${{ inputs.version }}" >> $GITHUB_ENV
+
     - name: "setup repo path"
       shell: bash
       run: echo "REPO_PATH=${{ env.REPO_OWNER }}/${{ inputs.push_dir }}" >> $GITHUB_ENV
+
     - name: "setup bundle tag"
       shell: bash
       run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
+
     - name: Inspect already bundled manifest
       id: tag_manifest
       shell: bash
       run: |
         if docker manifest inspect ${{ env.BUNDLE_TAG }} >/dev/null; then
-          echo ::set-output name=exists::"true"
+          echo "docker_manifest_exists=true" >> $GITHUB_ENV
         else
-          echo ::set-output name=exists::"false"
+          echo "docker_manifest_exists=false" >> $GITHUB_ENV
         fi
+
     - name: Get changed files
       id: changed_files
       if: steps.tag_manifest.outputs.exists == 'true'
-      uses: tj-actions/changed-files@v2.0.0
+      uses: tj-actions/changed-files@v32
       with:
         files: |
           Gemfile.lock
           yarn.lock
           client/yarn.lock
+
     - shell: bash
       run: |
         echo "do_bundle_step = ${{ inputs.do_bundle_step }}"      
-        echo "tag_manifest exists = ${{ steps.tag_manifest.outputs.exists }}"      
+        echo "tag_manifest exists = ${{ env.docker_manifest_exists }}"      
         echo "only_changed = ${{ steps.changed_files.outputs.only_changed }}"
+
     - name: Build and push bundle
-      if: (inputs.do_bundle_step == 'true') && ((steps.tag_manifest.outputs.exists == 'false') || (steps.changed_files.outputs.only_changed == 'true'))
+      if: (inputs.do_bundle_step == 'true') && ((env.docker_manifest_exists == 'false') || (steps.changed_files.outputs.only_changed == 'true'))
       uses: docker/build-push-action@v2
       with:
         secrets: |
@@ -133,6 +145,7 @@ runs:
         tags: |
           ${{ env.BUNDLE_TAG }}
         target: ${{ inputs.main_stage }}
+
     - name: Build and push main
       if: inputs.do_main_step == 'true'
       uses: docker/build-push-action@v2
