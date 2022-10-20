@@ -119,18 +119,18 @@ runs:
       uses: tj-actions/changed-files@v32
       with:
         files: |
-          Gemfile.lock
-          yarn.lock
-          client/yarn.lock
+          ./*
+          client/*
+          ./.github/**
 
     - shell: bash
       run: |
         echo "do_bundle_step = ${{ inputs.do_bundle_step }}"      
         echo "tag_manifest exists = ${{ env.docker_manifest_exists }}"      
-        echo "only_changed = ${{ steps.changed_files.outputs.only_changed }}"
+        echo "only_changed = ${{ steps.changed_files.outputs.any_changed }}"
 
     - name: Build and push bundle
-      if: (inputs.do_bundle_step == 'true') && ((env.docker_manifest_exists == 'false') || (steps.changed_files.outputs.only_changed == 'true'))
+      if: (inputs.do_bundle_step == 'true') && ((env.docker_manifest_exists == 'false') || (steps.changed_files.outputs.any_changed == 'true'))
       uses: docker/build-push-action@v2
       with:
         secrets: |
