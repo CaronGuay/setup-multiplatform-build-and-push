@@ -99,7 +99,7 @@ runs:
     - name: "setup repo owner and tag leaf"
       shell: bash
       run: |
-        echo "REPO_OWNER=${{ inputs.registry }}/${{ inputs.repo_owner }}" >> $GITHUB_ENV
+        echo "REPO_OWNER=${{ inputs.registry }}" >> $GITHUB_ENV
         echo "TAG_LEAF=${{ inputs.branch }}:${{ inputs.version }}" >> $GITHUB_ENV
 
     - name: "setup repo path"
