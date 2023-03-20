@@ -5,7 +5,7 @@ inputs:
   registry:
     description: 'Registry to get image'
     required: false
-    default: ghcr.io
+    default: 939516627486.dkr.ecr.region.amazonaws.com
   username:
     description: 'Registry login username'
     required: true
