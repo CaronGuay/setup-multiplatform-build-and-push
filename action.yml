@@ -60,15 +60,10 @@ inputs:
   build_args:
     description: 'arguments to pass to main build'
     required: false
-  AWS_ACCESS_KEY_ID:
-    description: 'aws credentials key'
-    required: true
-  AWS_SECRET_ACCESS_KEY:
-    description: 'aws credentials secret'
-    required: true
   AWS_REGION:
     description: 'aws credentials region'
-    required: true
+    default: 'us-east-1'
+    required: false
 
 #    push_directory: cg/customer/test
 #    branch: ${{ steps.extract_branch.outputs.branch }}
@@ -93,8 +88,8 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ inputs.username }}
+        aws-secret-access-key: ${{ inputs.password }}
         aws-region: ${{ inputs.AWS_REGION }}
 
     - name: Login to Amazon ECR
