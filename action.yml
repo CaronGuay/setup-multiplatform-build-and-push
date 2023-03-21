@@ -64,6 +64,16 @@ inputs:
     description: 'aws credentials region'
     default: 'us-east-1'
     required: false
+  watched_files:
+    description: 'files to watch for changes'
+    default:
+      ./*
+      client/*
+      ./.github/**
+    required: false
+  additional_watched_files:
+    description: 'additional files to watch for changes'
+    required: false
 
 #    push_directory: cg/customer/test
 #    branch: ${{ steps.extract_branch.outputs.branch }}
@@ -125,10 +135,8 @@ runs:
       if: env.docker_manifest_exists == 'true'
       uses: tj-actions/changed-files@v32
       with:
-        files: |
-          ./*
-          client/*
-          ./.github/**
+        files: |          
+          ${{ inputs.watched_files }}
 
     - shell: bash
       run: |
