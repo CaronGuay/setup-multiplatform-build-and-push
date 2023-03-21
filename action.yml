@@ -118,7 +118,7 @@ runs:
 
     - name: "setup bundle tag"
       shell: bash
-      run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/bundle/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
+      run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/${{ env.TAG_LEAF }}.bundle" >> $GITHUB_ENV
 
     - name: Inspect already bundled manifest
       id: tag_manifest
