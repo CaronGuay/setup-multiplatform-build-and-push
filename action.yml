@@ -37,9 +37,6 @@ inputs:
   push_dir:
     description: 'directory to push to'
     required: true
-  branch:
-    description: 'branch for tag'
-    required: true
   version:
     description: 'version for tag'
     required: true
@@ -75,10 +72,6 @@ inputs:
     description: 'additional files to watch for changes'
     required: false
 
-#    push_directory: cg/customer/test
-#    branch: ${{ steps.extract_branch.outputs.branch }}
-#    version: latest
-
 runs:
   using: "composite"
   steps:
@@ -106,12 +99,10 @@ runs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: "setup repo owner and tag leaf"
+    - name: "setup repo owner"
       shell: bash
       run: |
         echo "REPO_OWNER=${{ inputs.registry }}" >> $GITHUB_ENV
-        echo "TAG_LEAF=${{ inputs.branch }}:${{ inputs.version }}" >> $GITHUB_ENV
-        echo "BUNDLE_TAG_LEAF=${{ inputs.branch }}.bundle:${{ inputs.version }}" >> $GITHUB_ENV
 
     - name: "setup repo path"
       shell: bash
@@ -119,7 +110,7 @@ runs:
 
     - name: "setup bundle tag"
       shell: bash
-      run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/${{ env.BUNDLE_TAG_LEAF }}" >> $GITHUB_ENV
+      run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}:${{ inputs.version }}.bundle" >> $GITHUB_ENV
 
     - name: Inspect already bundled manifest
       id: tag_manifest
@@ -179,5 +170,5 @@ runs:
           ${{ inputs.build_args }}
         push: true
         tags: |
-          ${{ env.REPO_PATH }}/${{ env.TAG_LEAF }}
+          ${{ env.REPO_PATH }}:${{ inputs.version }}
         target: ${{ inputs.main_stage }}
