@@ -119,7 +119,7 @@ runs:
 
     - name: "setup bundle tag"
       shell: bash
-      run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/${{ env.TAG_LEAF }}" >> $GITHUB_ENV
+      run: echo "BUNDLE_TAG=${{ env.REPO_PATH }}/${{ env.BUNDLE_TAG_LEAF }}" >> $GITHUB_ENV
 
     - name: Inspect already bundled manifest
       id: tag_manifest
@@ -161,7 +161,7 @@ runs:
           ${{ inputs.build_args }}
         push: true
         tags: |
-          ${{ env.BUNDLE_TAG_LEAF }}
+          ${{ env.BUNDLE_TAG }}
         target: ${{ inputs.main_stage }}
 
     - name: Build and push main
@@ -174,7 +174,7 @@ runs:
         file: ${{ inputs.main_dockerfile_name }}
         platforms: ${{ inputs.platforms }}
         build-args: |
-          IMAGE_REF=${{ env.BUNDLE_TAG_LEAF }}
+          IMAGE_REF=${{ env.BUNDLE_TAG }}
           REGISTRY=${{ inputs.registry }}
           ${{ inputs.build_args }}
         push: true
