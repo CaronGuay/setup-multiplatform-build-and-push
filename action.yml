@@ -147,6 +147,7 @@ runs:
         platforms: ${{ inputs.platforms }}
         build-args: |
           IMAGE_REF=${{ env.REPO_OWNER }}/${{ inputs.bundle_from }}
+          REGISTRY=${{ inputs.registry }}
           ${{ inputs.build_args }}
         push: true
         tags: |
@@ -164,6 +165,7 @@ runs:
         platforms: ${{ inputs.platforms }}
         build-args: |
           IMAGE_REF=${{ env.BUNDLE_TAG }}
+          REGISTRY=${{ inputs.registry }}
           ${{ inputs.build_args }}
         push: true
         tags: |
